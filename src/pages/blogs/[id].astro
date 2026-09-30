@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CtaPanel from '../../components/CtaPanel.astro';
+import { getBlogById } from '../../lib/content-store.js';
+
+const post = await getBlogById(Astro.params.id);
+if (!post) return Astro.redirect('/404');
+
+const fmt = (d: string) =>
+  new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<Layout title={`${post.title} — Kliff Labs`} description={post.description}>
+  <main>
+    <div class="rails mx-auto">
+      <article class="mx-auto max-w-[760px] px-6 pb-[60px] pt-[170px]">
+        <a href="/blogs" class="font-exo text-[14px] font-semibold text-[var(--accent)] hover:underline">← All blogs</a>
+        <h1 class="mt-4 font-phudu text-[38px] font-extrabold leading-tight text-ink md:text-[48px]">{post.title}</h1>
+        <div class="dashed-x mt-4 flex items-center gap-4 pb-4 font-exo text-[13px] font-semibold uppercase tracking-[0.1em] text-muted">
+          {post.category && <span class="text-[var(--accent)]">{post.category}</span>}
+          <span>{post.author ?? post.publisher}</span>
+          <span>{fmt(post.publishDate)}</span>
+          <span>{post.readTime} min read</span>
+        </div>
+        <div class="mt-8 flex flex-col gap-5">
+          {post.content.map((para: string) => (
+            <p class="m-0 font-exo text-[17px] leading-[1.75] text-ink/85">{para}</p>
+          ))}
+        </div>
+      </article>
+
+      <CtaPanel />
+    </div>
+  </main>
+</Layout>

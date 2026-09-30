@@ -1,0 +1,47 @@
+---
+import { serviceGroups } from '../data/services';
+
+// Landing "Our Services" grid: one card per group, top items as chips.
+// The Web3 card is always purple and gates into the web3 section.
+---
+
+<section id="services" class="px-6 py-[80px] lg:px-[75px]">
+  <div class="mb-10 text-center">
+    <p class="m-0 font-exo text-[13px] font-bold uppercase tracking-[0.16em] text-[var(--accent)]">Our Services</p>
+    <h2 class="m-0 mt-2 font-phudu text-[40px] font-bold leading-tight text-ink md:text-[48px]">One stop. Every discipline.</h2>
+  </div>
+
+  <div class="mx-auto grid max-w-[1100px] grid-cols-1 gap-6 md:grid-cols-2">
+    {serviceGroups.map((group) => (
+      <a
+        href={group.href}
+        class={`group flex flex-col gap-4 rounded-2xl border p-8 transition-transform duration-200 hover:-translate-y-1 ${
+          group.web3
+            ? 'web3-card border-[#8736d94d]'
+            : 'border-[var(--hairline-solid)] bg-white'
+        }`}
+      >
+        <div class="flex items-center justify-between">
+          <h3 class={`m-0 font-phudu text-[26px] font-bold ${group.web3 ? 'text-[#8736d9]' : 'text-ink'}`}>{group.label}</h3>
+          <span class={`font-exo text-[18px] transition-transform duration-200 group-hover:translate-x-1 ${group.web3 ? 'text-[#8736d9]' : 'text-[var(--accent)]'}`}>→</span>
+        </div>
+        <p class="m-0 font-exo text-[15px] text-muted">{group.blurb}</p>
+        <ul class="m-0 mt-auto flex list-none flex-wrap gap-2 p-0">
+          {group.items.slice(0, 4).map((item) => (
+            <li class={`rounded-full border px-3 py-1 font-exo text-[12px] ${group.web3 ? 'border-[#8736d94d] text-[#8736d9]' : 'border-[var(--hairline-solid)] text-ink'}`}>{item.name}</li>
+          ))}
+          {group.items.length > 4 && (
+            <li class="rounded-full border border-dashed border-[var(--hairline-solid)] px-3 py-1 font-exo text-[12px] text-muted">+{group.items.length - 4} more</li>
+          )}
+        </ul>
+        {group.web3 && <p class="m-0 font-exo text-[12px] font-semibold uppercase tracking-[0.12em] text-[#8736d9]">Enter the Web3 side ↗</p>}
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .web3-card {
+    background: linear-gradient(160deg, rgba(135, 54, 217, 0.08), rgba(135, 54, 217, 0.02)), #ffffff;
+  }
+</style>

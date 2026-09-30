@@ -1,0 +1,52 @@
+---
+import '../styles/global.css';
+import Logo from '../components/Logo.astro';
+
+interface Props {
+  title: string;
+  bare?: boolean; // login page: no topbar
+}
+const { title, bare = false } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '');
+const links = [
+  { label: 'Dashboard', href: '/admin' },
+  { label: 'Blogs', href: '/admin/blogs' },
+  { label: 'Projects', href: '/admin/projects' },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="min-h-screen bg-canvas font-exo text-ink">
+    {!bare && (
+      <header class="dashed-x flex items-center justify-between bg-white/60 px-6 py-4 backdrop-blur lg:px-10">
+        <a href="/admin" class="flex items-center gap-2.5" aria-label="Admin dashboard">
+          <Logo showWordmark={false} />
+          <span class="font-phudu text-[20px] leading-none tracking-tight">kliff<span class="text-muted">admin</span></span>
+        </a>
+        <nav class="flex items-center gap-6 text-[15px] font-medium">
+          {links.map((l) => (
+            <a href={l.href} class={path === l.href ? 'font-semibold text-[var(--accent)]' : 'text-muted hover:text-ink'}>{l.label}</a>
+          ))}
+          <a href="/" target="_blank" class="text-muted hover:text-ink">View site ↗</a>
+          <button id="logout-btn" type="button" class="rounded-full border border-[var(--hairline-solid)] bg-white px-4 py-1.5 text-[14px] font-medium hover:border-ink">Log out</button>
+        </nav>
+      </header>
+    )}
+    <slot />
+    {!bare && (
+      <script>
+        document.getElementById('logout-btn')?.addEventListener('click', async () => {
+          await fetch('/api/admin/logout', { method: 'POST' });
+          window.location.href = '/admin/login';
+        });
+      </script>
+    )}
+  </body>
+</html>

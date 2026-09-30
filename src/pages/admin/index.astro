@@ -1,0 +1,43 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { isAuthed } from '../../lib/admin-auth.js';
+import { listBlogs, listProjects } from '../../lib/content-store.js';
+
+if (!isAuthed(Astro.cookies)) return Astro.redirect('/admin/login');
+
+const [blogs, projects] = await Promise.all([listBlogs(), listProjects()]);
+const supabaseMode = Boolean(import.meta.env.SUPABASE_URL && import.meta.env.SUPABASE_SERVICE_ROLE_KEY);
+const cards = [
+  { label: 'Blogs', count: blogs.length, href: '/admin/blogs', hint: 'posts on /blogs' },
+  { label: 'Projects', count: projects.length, href: '/admin/projects', hint: 'tiles on /work' },
+];
+---
+
+<AdminLayout title="Dashboard — Kliff Admin">
+  <main class="mx-auto max-w-[900px] px-6 py-12">
+    <div class="mb-8 flex flex-wrap items-end justify-between gap-3">
+      <h1 class="m-0 font-phudu text-[40px] font-extrabold leading-none">Dashboard</h1>
+      <span class={`rounded-full px-3 py-1 text-[12.5px] font-medium ${supabaseMode ? 'bg-green-100 text-green-700' : 'bg-[var(--accent-soft)] text-[var(--accent)]'}`}>
+        {supabaseMode ? 'Supabase backend' : 'Local files backend (src/data)'}
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      {cards.map((c) => (
+        <a href={c.href} class="group rounded-2xl border border-[var(--hairline-solid)] bg-white p-8 transition-transform duration-200 hover:-translate-y-1">
+          <p class="m-0 font-phudu text-[52px] font-extrabold leading-none text-[var(--accent)]">{c.count}</p>
+          <h2 class="m-0 mt-2 text-[20px] font-semibold">{c.label}</h2>
+          <p class="m-0 mt-1 text-[14px] text-muted">{c.hint}</p>
+          <span class="mt-3 inline-block text-[14px] font-semibold text-[var(--accent)] transition-transform duration-200 group-hover:translate-x-1">Manage →</span>
+        </a>
+      ))}
+    </div>
+
+    {!supabaseMode && (
+      <p class="mt-8 rounded-xl border border-dashed border-[var(--hairline-solid)] bg-white p-4 text-[13.5px] text-muted">
+        Edits are written straight to <code>src/data/blogs.json</code> and <code>src/data/projects.json</code> — commit them like code.
+        For production editing, set <code>SUPABASE_URL</code> and <code>SUPABASE_SERVICE_ROLE_KEY</code> (schema in <code>supabase/schema.sql</code>).
+      </p>
+    )}
+  </main>
+</AdminLayout>

@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "title": "Web2 or Web3? How to pick the right stack for your product",
+    "description": "Chains, wallets, and tokens are tools, not a religion. A practical guide to deciding whether your product needs Web3 at all.",
+    "category": "Web3",
+    "publisher": "Kliff Labs",
+    "author": "Kliff Labs Team",
+    "publishDate": "2026-05-12",
+    "readTime": 6,
+    "content": [
+      "Every few weeks a founder asks us to 'add blockchain' to a product that would be faster, cheaper, and easier to use without it. And every few weeks another founder dismisses Web3 entirely when a token or onchain settlement is exactly the mechanism their market needs.",
+      "The question that cuts through it: does your product need shared state that no single company should own? If yes — marketplaces with real digital ownership, cross-border settlement, community governance — Web3 earns its complexity. If no, ship Web2 and move fast.",
+      "At Kliff we build both, which keeps us honest. The stack serves the product, never the other way round. Start from the user problem, price the trust assumptions, then pick the chain — or the Postgres database."
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Why your MVP should embarrass you (a little)",
+    "description": "Scope is the silent killer of startups. Here's how we cut an idea down to the version worth shipping in weeks, not quarters.",
+    "category": "Development",
+    "publisher": "Kliff Labs",
+    "author": "Kliff Labs Team",
+    "publishDate": "2026-03-28",
+    "readTime": 4,
+    "content": [
+      "The best MVPs we've shipped had a feature list that made their founders wince. That's the point: an MVP is an instrument for learning, not a small version of the dream product.",
+      "Our rule of thumb — if removing a feature doesn't change what you'd learn from launch, remove it. Most ideas survive on one core loop: the thing a user does, the value they get, the reason they return.",
+      "Ship the loop. Everything else is a fast follow, funded by what real users teach you."
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Design systems: the cheapest engineer you'll ever hire",
+    "description": "A good design system isn't decoration — it's compounding leverage for every sprint after the first one.",
+    "category": "Design",
+    "publisher": "Kliff Labs",
+    "author": "Kliff Labs Team",
+    "publishDate": "2026-01-15",
+    "readTime": 5,
+    "content": [
+      "Teams think of design systems as a luxury for later. In practice, the projects where we set tokens, type scale, and components in week one ship new pages in hours instead of days by week six.",
+      "A design system is a contract between design and engineering: colors, spacing, and behavior decided once, reused everywhere. Fewer decisions per feature means faster features and a product that feels coherent.",
+      "Start smaller than you think: a palette, two fonts, one button. Grow it only when a real screen demands it."
+    ]
+  }
+]

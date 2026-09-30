@@ -1,0 +1,124 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { isAuthed } from '../../lib/admin-auth.js';
+import { listBlogs } from '../../lib/content-store.js';
+
+if (!isAuthed(Astro.cookies)) return Astro.redirect('/admin/login');
+
+const blogs = (await listBlogs()).sort((a, b) => String(b.publishDate).localeCompare(String(a.publishDate)));
+const input = 'w-full rounded-xl border border-[var(--hairline-solid)] bg-white px-3.5 py-2.5 text-[14.5px] outline-none transition-colors focus:border-[var(--accent)]';
+const label = 'flex flex-col gap-1.5 text-[13.5px] font-semibold';
+---
+
+<AdminLayout title="Blogs — Kliff Admin">
+  <main class="mx-auto max-w-[1000px] px-6 py-12">
+    <div class="mb-8 flex flex-wrap items-center justify-between gap-3">
+      <h1 class="m-0 font-phudu text-[40px] font-extrabold leading-none">Blogs</h1>
+      <button id="new-btn" type="button" class="btn btn-accent !h-[43px]">+ New blog</button>
+    </div>
+
+    <div class="overflow-x-auto rounded-2xl border border-[var(--hairline-solid)] bg-white">
+      <table class="w-full border-collapse text-left text-[14.5px]">
+        <thead>
+          <tr class="border-b border-[var(--hairline-solid)] text-[12.5px] uppercase tracking-[0.08em] text-muted">
+            <th class="px-5 py-3.5 font-semibold">Title</th>
+            <th class="px-5 py-3.5 font-semibold">Category</th>
+            <th class="px-5 py-3.5 font-semibold">Date</th>
+            <th class="px-5 py-3.5 font-semibold">Read</th>
+            <th class="px-5 py-3.5 font-semibold"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {blogs.map((b) => (
+            <tr class="border-b border-[var(--hairline-solid)] last:border-0">
+              <td class="max-w-[380px] px-5 py-3.5 font-medium">{b.title}</td>
+              <td class="px-5 py-3.5 text-muted">{b.category}</td>
+              <td class="px-5 py-3.5 text-muted">{b.publishDate}</td>
+              <td class="px-5 py-3.5 text-muted">{b.readTime} min</td>
+              <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                <button type="button" data-edit={String(b.id)} class="font-semibold text-[var(--accent)] hover:underline">Edit</button>
+                <button type="button" data-del={String(b.id)} class="ml-4 font-semibold text-red-500 hover:underline">Delete</button>
+              </td>
+            </tr>
+          ))}
+          {blogs.length === 0 && (
+            <tr><td colspan="5" class="px-5 py-10 text-center text-muted">No blogs yet — create the first one.</td></tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    <dialog id="blog-dialog" class="w-full max-w-[640px] rounded-2xl border border-[var(--hairline-solid)] p-0 backdrop:bg-ink/40">
+      <form id="blog-form" method="dialog" class="flex flex-col gap-4 p-8">
+        <h2 id="dialog-title" class="m-0 font-phudu text-[26px] font-bold">New blog</h2>
+        <input type="hidden" name="id" />
+        <label class={label}>Title <input class={input} name="title" required /></label>
+        <label class={label}>Description <textarea class={input} name="description" rows="2" required></textarea></label>
+        <div class="grid grid-cols-2 gap-4">
+          <label class={label}>Category <input class={input} name="category" list="cats" required /></label>
+          <label class={label}>Author <input class={input} name="author" value="Kliff Labs Team" /></label>
+          <label class={label}>Publish date <input class={input} type="date" name="publishDate" required /></label>
+          <label class={label}>Read time (min) <input class={input} type="number" name="readTime" min="1" value="4" /></label>
+        </div>
+        <datalist id="cats"><option value="Design" /><option value="Development" /><option value="Web3" /><option value="Growth" /></datalist>
+        <label class={label}>Content <span class="font-normal text-muted">(blank line = new paragraph)</span>
+          <textarea class={input} name="content" rows="9"></textarea>
+        </label>
+        <p id="form-error" class="m-0 hidden rounded-lg bg-red-100 p-2.5 text-center text-[13.5px] text-red-600"></p>
+        <div class="mt-1 flex justify-end gap-3">
+          <button type="button" id="cancel-btn" class="btn btn-ghost !h-[43px]">Cancel</button>
+          <button type="submit" class="btn btn-ink !h-[43px]">Save blog</button>
+        </div>
+      </form>
+    </dialog>
+  </main>
+</AdminLayout>
+
+<script define:vars={{ blogs }}>
+  const dialog = document.getElementById('blog-dialog');
+  const form = document.getElementById('blog-form');
+  const title = document.getElementById('dialog-title');
+  const errorBox = document.getElementById('form-error');
+
+  const openDialog = (blog) => {
+    form.reset();
+    errorBox.classList.add('hidden');
+    title.textContent = blog ? 'Edit blog' : 'New blog';
+    if (blog) {
+      for (const key of ['id', 'title', 'description', 'category', 'author', 'publishDate', 'readTime']) {
+        if (form.elements[key]) form.elements[key].value = blog[key] ?? '';
+      }
+      form.elements.content.value = (blog.content ?? []).join('\n\n');
+    }
+    dialog.showModal();
+  };
+
+  document.getElementById('new-btn').addEventListener('click', () => openDialog(null));
+  document.getElementById('cancel-btn').addEventListener('click', () => dialog.close());
+
+  document.querySelectorAll('[data-edit]').forEach((btn) =>
+    btn.addEventListener('click', () => openDialog(blogs.find((b) => String(b.id) === btn.dataset.edit)))
+  );
+
+  document.querySelectorAll('[data-del]').forEach((btn) =>
+    btn.addEventListener('click', async () => {
+      if (!confirm('Delete this blog?')) return;
+      const res = await fetch(`/api/admin/blogs?id=${btn.dataset.del}`, { method: 'DELETE' });
+      if (res.ok) window.location.reload();
+      else alert((await res.json()).details || 'Delete failed');
+    })
+  );
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const isEdit = Boolean(data.get('id'));
+    const res = await fetch('/api/admin/blogs', { method: isEdit ? 'PUT' : 'POST', body: data });
+    if (res.ok) window.location.reload();
+    else {
+      const body = await res.json().catch(() => ({}));
+      errorBox.textContent = body.details || body.error || 'Save failed';
+      errorBox.classList.remove('hidden');
+    }
+  });
+</script>

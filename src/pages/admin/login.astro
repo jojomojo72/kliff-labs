@@ -1,0 +1,70 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { adminCreds, isAuthed } from '../../lib/admin-auth.js';
+
+if (isAuthed(Astro.cookies)) return Astro.redirect('/admin');
+const creds = adminCreds();
+const devDefault = Boolean(creds?.isDevDefault);
+const disabled = !creds;
+---
+
+<AdminLayout title="Admin Login — Kliff Labs" bare>
+  <main class="hero-bg grid min-h-screen place-items-center px-6">
+    <div class="w-full max-w-[420px] rounded-[28px] border border-[var(--hairline-solid)] bg-white/85 p-10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.1)] backdrop-blur-xl">
+      <header class="mb-8 text-center">
+        <h1 class="m-0 font-phudu text-[34px] font-extrabold">Admin Login</h1>
+        <p class="m-0 mt-2 text-[15px] text-muted">Sign in to manage blogs and projects.</p>
+        {devDefault && (
+          <p class="mx-auto mt-3 inline-block rounded-full bg-[var(--accent-soft)] px-3 py-1 text-[12.5px] font-medium text-[var(--accent)]">
+            Dev mode — admin@kliff.io / kliff
+          </p>
+        )}
+        {disabled && (
+          <p class="mx-auto mt-3 inline-block rounded-full bg-red-100 px-3 py-1 text-[12.5px] font-medium text-red-600">
+            Admin disabled: set ADMIN_EMAIL and ADMIN_PASSWORD
+          </p>
+        )}
+      </header>
+
+      <form id="login-form" class="flex flex-col gap-5">
+        <label class="flex flex-col gap-1.5 text-[14px] font-semibold">
+          Email
+          <input type="email" name="email" required placeholder="Enter email" class="rounded-xl border border-[var(--hairline-solid)] bg-white px-4 py-3 font-normal outline-none transition-colors focus:border-[var(--accent)]" />
+        </label>
+        <label class="flex flex-col gap-1.5 text-[14px] font-semibold">
+          Password
+          <input type="password" name="password" required placeholder="Enter password" class="rounded-xl border border-[var(--hairline-solid)] bg-white px-4 py-3 font-normal outline-none transition-colors focus:border-[var(--accent)]" />
+        </label>
+        <p id="login-error" class="m-0 hidden rounded-lg bg-red-100 p-2.5 text-center text-[13.5px] text-red-600"></p>
+        <button type="submit" class="btn btn-ink mt-1 w-full">Login to Dashboard</button>
+      </form>
+    </div>
+  </main>
+</AdminLayout>
+
+<script>
+  const form = document.getElementById('login-form') as HTMLFormElement;
+  const error = document.getElementById('login-error');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      });
+      if (response.ok) {
+        window.location.href = '/admin';
+      } else if (error) {
+        error.textContent = (await response.json()).message || 'Invalid credentials';
+        error.classList.remove('hidden');
+      }
+    } catch {
+      if (error) {
+        error.textContent = 'Something went wrong. Please try again.';
+        error.classList.remove('hidden');
+      }
+    }
+  });
+</script>

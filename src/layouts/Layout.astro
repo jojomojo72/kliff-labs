@@ -1,0 +1,54 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  theme?: 'web3';
+}
+
+const {
+  title = 'Kliff Labs — Web, App, Web3, Branding & Marketing Studio',
+  description = 'Kliff Labs is a one-stop studio: web and app design and development, Web3 design and development, marketing, and branding.',
+  theme,
+} = Astro.props;
+
+// '/web3' routes stand in for web3.kliff.io (mapped at deploy time)
+const base = theme === 'web3' ? '/web3' : '';
+const themeColor = theme === 'web3' ? '#8736d9' : '#2596be';
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
+---
+
+<html lang="en" data-theme={theme}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={themeColor} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={site.name} />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="preload" href="/fonts/Exo_2/static/Exo2-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/Exo_2/static/Exo2-SemiBold.ttf" as="font" type="font/ttf" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/Phudu/static/Phudu-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/Phudu/static/Phudu-ExtraBold.ttf" as="font" type="font/ttf" crossorigin="anonymous" />
+  </head>
+  <body>
+    <Navbar base={base} />
+    <slot />
+    <div class="rails mx-auto">
+      <Footer base={base} />
+    </div>
+  </body>
+</html>

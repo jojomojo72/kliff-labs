@@ -1,0 +1,95 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CtaPanel from '../../components/CtaPanel.astro';
+import { listBlogs } from '../../lib/content-store.js';
+
+const blogs = await listBlogs();
+
+// Blog index blending the two references per plan: blockmob's card grid,
+// pixelpoint's category tabs + "Category | date" meta line + author.
+const posts = [...blogs].sort((a, b) => b.publishDate.localeCompare(a.publishDate));
+const categories = ['All', ...new Set(posts.map((p) => p.category))];
+const fmt = (d: string) =>
+  new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<Layout title="Blogs — Kliff Labs" description="Notes from the Kliff Labs studio on design, development, Web3, and growth.">
+  <main>
+    <div class="rails mx-auto">
+      <header class="px-6 pb-[36px] pt-[170px] text-center lg:px-[75px]">
+        <h1 class="m-0 font-phudu text-[52px] font-extrabold leading-none text-ink md:text-[72px]">
+          FROM THE <span class="text-[var(--accent)]">STUDIO</span>
+        </h1>
+      </header>
+
+      <div class="dashed-x flex flex-wrap items-center justify-center gap-7 px-6 pb-0 lg:px-[75px]" role="tablist" aria-label="Filter posts">
+        {categories.map((cat, i) => (
+          <button
+            type="button"
+            class={`blog-tab border-b-2 pb-3 font-exo text-[15px] font-medium transition-colors ${
+              i === 0 ? 'is-active border-[var(--accent)] text-[var(--accent)]' : 'border-transparent text-muted hover:text-ink'
+            }`}
+            data-filter={cat}
+            >{cat}</button
+          >
+        ))}
+      </div>
+
+      <section class="px-6 py-12 lg:px-[75px]">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {posts.map((post) => (
+            <a
+              href={`/blogs/${post.id}`}
+              class="blog-card group flex h-full flex-col gap-3 rounded-2xl border border-[var(--hairline-solid)] bg-white p-7 transition-transform duration-200 hover:-translate-y-1"
+              data-cat={post.category}
+            >
+              <div class="flex items-center gap-3 font-exo text-[13px]">
+                <span class="font-semibold text-[var(--accent)]">{post.category}</span>
+                <span class="h-4 w-px bg-[var(--hairline-solid)]" aria-hidden="true"></span>
+                <span class="text-muted">{fmt(post.publishDate)}</span>
+              </div>
+              <h2 class="m-0 font-phudu text-[24px] font-bold leading-tight text-ink group-hover:text-[var(--accent)]">{post.title}</h2>
+              <p class="m-0 font-exo text-[14.5px] leading-relaxed text-muted">{post.description}</p>
+              <div class="mt-auto flex items-center justify-between font-exo text-[13px] text-muted">
+                <span class="font-medium text-ink">{post.author}</span>
+                <span>{post.readTime} min read</span>
+              </div>
+            </a>
+          ))}
+        </div>
+        <div id="blog-empty" class="hidden py-16 text-center font-exo text-[17px] text-muted">
+          Nothing here yet, try a different category
+        </div>
+      </section>
+
+      <CtaPanel />
+    </div>
+  </main>
+</Layout>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.blog-tab');
+  const cards = document.querySelectorAll<HTMLElement>('.blog-card');
+  const empty = document.getElementById('blog-empty');
+
+  tabs.forEach((tab) =>
+    tab.addEventListener('click', () => {
+      const filter = tab.dataset.filter;
+      tabs.forEach((t) => {
+        const active = t === tab;
+        t.classList.toggle('is-active', active);
+        t.classList.toggle('border-[var(--accent)]', active);
+        t.classList.toggle('text-[var(--accent)]', active);
+        t.classList.toggle('border-transparent', !active);
+        t.classList.toggle('text-muted', !active);
+      });
+      let shown = 0;
+      cards.forEach((card) => {
+        const show = filter === 'All' || card.dataset.cat === filter;
+        card.classList.toggle('hidden', !show);
+        if (show) shown++;
+      });
+      empty?.classList.toggle('hidden', shown > 0);
+    })
+  );
+</script>

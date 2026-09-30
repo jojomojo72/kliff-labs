@@ -1,0 +1,330 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ---------- Fonts (same families as the blockmob design language) ---------- */
+@font-face {
+  font-family: "Exo 2";
+  src: url("/fonts/Exo_2/static/Exo2-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Exo 2";
+  src: url("/fonts/Exo_2/static/Exo2-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Exo 2";
+  src: url("/fonts/Exo_2/static/Exo2-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Exo 2";
+  src: url("/fonts/Exo_2/static/Exo2-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Phudu";
+  src: url("/fonts/Phudu/static/Phudu-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Phudu";
+  src: url("/fonts/Phudu/static/Phudu-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Phudu";
+  src: url("/fonts/Phudu/static/Phudu-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Phudu";
+  src: url("/fonts/Phudu/static/Phudu-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Theme ----------
+   Default = kliff.io (blue). [data-theme="web3"] = web3.kliff.io (purple).
+   Everything blue on the main site must go purple in the web3 section,
+   so anything brand-colored uses these variables. */
+:root {
+  --accent: #2596be;
+  --accent-rgb: 37 150 190;
+  --accent-soft: rgba(37, 150, 190, 0.1);
+  --accent-strong: #1c7ba0;
+  --ink: #0b030e;
+  --muted: #7c7c7c;
+  --canvas: #ebebeb;
+  --card: #ffffff;
+  --hairline: #11051626;
+  --hairline-solid: #1105161a;
+}
+
+[data-theme="web3"] {
+  --accent: #8736d9;
+  --accent-rgb: 135 54 217;
+  --accent-soft: rgba(135, 54, 217, 0.1);
+  --accent-strong: #6f27b8;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: "Exo 2", sans-serif;
+  scroll-behavior: smooth;
+}
+
+/* ---------- Shared patterns from the design language ---------- */
+
+/* dashed hairline (blockmob-style) */
+.dashed-x {
+  border-bottom: 1px solid;
+  border-image: repeating-linear-gradient(to right, var(--hairline) 0 8px, transparent 8px 16px) 1;
+}
+
+/* section wrapper with dashed vertical rails */
+.rails {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+}
+.rails::before,
+.rails::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, var(--hairline) 0px, var(--hairline) 8px, transparent 8px, transparent 16px);
+}
+.rails::before {
+  left: 0;
+}
+.rails::after {
+  right: 0;
+}
+@media (min-width: 1300px) {
+  .rails {
+    margin-left: 120px;
+    margin-right: 120px;
+  }
+}
+@media (min-width: 1000px) and (max-width: 1299px) {
+  .rails {
+    margin-left: 70px;
+    margin-right: 70px;
+  }
+}
+@media (max-width: 768px) {
+  .rails::before,
+  .rails::after {
+    display: none;
+  }
+}
+
+/* pill buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 49px;
+  padding: 10px 30px;
+  border-radius: 16px;
+  font-family: "Exo 2", sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+  white-space: nowrap;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.92;
+}
+.btn-ink {
+  background: var(--ink);
+  color: #ffffff;
+}
+.btn-accent {
+  background: var(--accent);
+  color: #ffffff;
+}
+.btn-ghost {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--hairline-solid);
+}
+
+/* hero badge */
+.top-badge {
+  background: #ffffffcc;
+  border: 1px solid var(--hairline-solid);
+  border-radius: 100px;
+  padding: 6px 14px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--ink);
+}
+.top-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+/* cornered accent box (blockmob "PinkBox", accent-colored here) */
+.corner-box {
+  position: relative;
+  display: inline-block;
+  border: 2px solid var(--accent);
+  padding: 0 15px;
+  margin: 9px 10px 0;
+  color: var(--accent);
+}
+.corner-box .corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: var(--canvas);
+  border: 2px solid var(--accent);
+}
+.corner-box .corner.tl {
+  top: -8px;
+  left: -8px;
+}
+.corner-box .corner.tr {
+  top: -8px;
+  right: -8px;
+}
+.corner-box .corner.bl {
+  bottom: -8px;
+  left: -8px;
+}
+.corner-box .corner.br {
+  bottom: -8px;
+  right: -8px;
+}
+.corner-box .rotator-clip {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+/* word rotator */
+.rotator {
+  display: inline-block;
+  transition: all 0.5s ease;
+}
+.rotator.out {
+  opacity: 0;
+  transform: translateY(100%);
+}
+.rotator.in {
+  animation: slideDownIn 0.5s ease forwards;
+}
+@keyframes slideDownIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* blueprint grid hero background, tinted by the accent */
+.hero-bg {
+  background-image:
+    radial-gradient(ellipse 60% 55% at 50% 0%, var(--accent-soft), transparent 70%),
+    linear-gradient(to right, rgb(var(--accent-rgb) / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--accent-rgb) / 0.05) 1px, transparent 1px);
+  background-size: 100% 100%, 48px 48px, 48px 48px;
+}
+
+/* floating crypto glyphs — web3 hero only */
+.crypto-float {
+  position: absolute;
+  font-family: "Phudu", sans-serif;
+  font-weight: 600;
+  color: rgb(var(--accent-rgb) / 0.22);
+  user-select: none;
+  pointer-events: none;
+  animation: floatUp 14s linear infinite;
+}
+@keyframes floatUp {
+  0% {
+    transform: translateY(40px) rotate(-6deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-320px) rotate(8deg);
+    opacity: 0;
+  }
+}
+
+/* soft accent glow pulse — web3 accents */
+.glow-pulse {
+  animation: glowPulse 3.2s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(var(--accent-rgb) / 0.25);
+  }
+  50% {
+    box-shadow: 0 0 24px 4px rgb(var(--accent-rgb) / 0.28);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rotator,
+  .crypto-float,
+  .glow-pulse {
+    animation: none !important;
+    transition: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

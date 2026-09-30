@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CtaPanel from '../components/CtaPanel.astro';
+import { serviceGroups } from '../data/services';
+
+// Full catalogue. Static layout on purpose (per plan: layout like
+// marketsync.ai here — no scroll animations).
+---
+
+<Layout
+  title="Services — Kliff Labs"
+  description="Everything Kliff Labs does: web design and development, apps, Web3, branding and marketing."
+>
+  <main>
+    <div class="rails mx-auto">
+      <header class="px-6 pb-[40px] pt-[170px] text-center lg:px-[75px]">
+        <p class="m-0 font-exo text-[13px] font-bold uppercase tracking-[0.16em] text-[var(--accent)]">Our Services</p>
+        <h1 class="m-0 mt-2 font-phudu text-[48px] font-extrabold leading-none text-ink md:text-[64px]">EVERYTHING WE DO</h1>
+        <p class="mx-auto mt-4 max-w-[640px] font-exo text-[17px] text-muted">
+          Four disciplines, one team. Pick a lane or hand us the whole road.
+        </p>
+      </header>
+
+      {serviceGroups.map((group) => (
+        <section id={group.key} class="scroll-mt-28 px-6 py-[50px] lg:px-[75px]">
+          <div class="mb-8 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 class={`m-0 font-phudu text-[34px] font-bold leading-none ${group.web3 ? 'text-[#8736d9]' : 'text-ink'}`}>{group.label}</h2>
+              <p class="m-0 mt-2 font-exo text-[15px] text-muted">{group.blurb}</p>
+            </div>
+            {group.web3 && (
+              <a href="/web3" class="font-exo text-[14px] font-semibold text-[#8736d9] hover:underline">Visit the Web3 section ↗</a>
+            )}
+          </div>
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {group.items.map((item) => (
+              <div class={`rounded-2xl border bg-white p-6 ${group.web3 ? 'border-[#8736d933]' : 'border-[var(--hairline-solid)]'}`}>
+                <h3 class="m-0 font-exo text-[16px] font-semibold text-ink">{item.name}</h3>
+                <p class="m-0 mt-1.5 font-exo text-[13.5px] leading-relaxed text-muted">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <CtaPanel />
+    </div>
+  </main>
+</Layout>

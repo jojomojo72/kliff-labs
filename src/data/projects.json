@@ -1,0 +1,119 @@
+[
+  {
+    "slug": "northgate-capital",
+    "title": "Northgate Capital",
+    "tagline": "Private equity, repositioned",
+    "category": "Web",
+    "year": "2026",
+    "status": "live",
+    "work": [
+      "Brand refresh",
+      "UI/UX & design system",
+      "Astro + CMS build",
+      "SEO"
+    ],
+    "stack": [
+      "Astro",
+      "Tailwind",
+      "Sanity"
+    ],
+    "link": "https://example.com",
+    "featured": true
+  },
+  {
+    "slug": "loopa",
+    "title": "Loopa",
+    "tagline": "Habit tracking that feels calm",
+    "category": "App",
+    "year": "2025",
+    "status": "live",
+    "work": [
+      "Product design",
+      "Cross-platform build",
+      "App Store launch"
+    ],
+    "stack": [
+      "React Native",
+      "Supabase"
+    ],
+    "link": "https://example.com",
+    "featured": true
+  },
+  {
+    "slug": "mintline",
+    "title": "Mintline",
+    "tagline": "Gasless mints, royalties done right",
+    "category": "Web3",
+    "year": "2025",
+    "status": "live",
+    "work": [
+      "Smart contracts",
+      "dApp front-end",
+      "Wallet onboarding",
+      "Launch"
+    ],
+    "stack": [
+      "Solidity",
+      "Next.js",
+      "Wagmi"
+    ],
+    "link": "https://example.com",
+    "featured": true
+  },
+  {
+    "slug": "harbor-dao",
+    "title": "Harbor DAO",
+    "tagline": "Governance for maritime logistics",
+    "category": "Web3",
+    "year": "2026",
+    "status": "in-progress",
+    "work": [
+      "Tokenomics",
+      "Governance contracts",
+      "Treasury dashboard"
+    ],
+    "stack": [
+      "Solidity",
+      "Foundry",
+      "React"
+    ]
+  },
+  {
+    "slug": "atlas-fitness",
+    "title": "Atlas Fitness",
+    "tagline": "A gym brand with actual muscle",
+    "category": "Branding",
+    "year": "2026",
+    "status": "in-progress",
+    "work": [
+      "Brand strategy",
+      "Visual identity",
+      "Content kit",
+      "Paid ads"
+    ],
+    "stack": [
+      "Figma",
+      "Meta Ads"
+    ]
+  },
+  {
+    "slug": "quartz-analytics",
+    "title": "Quartz Analytics",
+    "tagline": "Analytics people actually open",
+    "category": "Web",
+    "year": "2024",
+    "status": "live",
+    "work": [
+      "SaaS front-end",
+      "Client portal",
+      "Marketing site",
+      "Email automation"
+    ],
+    "stack": [
+      "React",
+      "Node",
+      "Stripe"
+    ],
+    "link": "https://example.com"
+  }
+]

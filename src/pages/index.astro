@@ -1,0 +1,94 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import ServicesSection from '../components/ServicesSection.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import CtaPanel from '../components/CtaPanel.astro';
+import { listProjects } from '../lib/content-store.js';
+import { site } from '../data/site';
+
+const featured = (await listProjects()).filter((p) => p.featured);
+const steps = [
+  { n: '01', title: 'Discover', text: 'Goals, users, and scope — before any pixels.' },
+  { n: '02', title: 'Design', text: 'Wireframes to polished UI, tested with real flows.' },
+  { n: '03', title: 'Build', text: 'Clean, fast builds that ship on schedule.' },
+  { n: '04', title: 'Ship & grow', text: 'Launch, measure, market, iterate.' },
+];
+---
+
+<Layout>
+  <main>
+    <Hero
+      badge="Onboarding projects for Q4 2026"
+      titleTop="ONE STOP SHOP"
+      titleBottom="FOR"
+      words={['WEBSITES', 'APPS', 'BRANDS', 'WEB3']}
+      sub="Web and app design and development, Web3, marketing, and branding — one team from first sketch to shipped product."
+      ctas={[
+        { label: "Let's talk!", href: '/lets-talk', style: 'ink' },
+        { label: 'WhatsApp us', href: site.whatsapp, style: 'ghost', external: true },
+      ]}
+    />
+
+    <div class="rails mx-auto">
+      <ServicesSection />
+
+      <!-- gateway from the blue site into the purple web3 section -->
+      <section class="px-6 pb-[80px] lg:px-[75px]">
+        <a
+          href="/web3"
+          class="web3-banner group mx-auto flex max-w-[1100px] flex-col items-center justify-between gap-6 rounded-3xl px-10 py-12 text-center sm:flex-row sm:text-left"
+        >
+          <div>
+            <h2 class="m-0 font-phudu text-[32px] font-bold leading-tight text-white">Building onchain?</h2>
+            <p class="m-0 mt-2 font-exo text-[16px] text-white/80">
+              Smart contracts, dApps, tokens, NFTs, bots — enter the Web3 side of Kliff.
+            </p>
+          </div>
+          <span class="btn font-exo shrink-0 bg-white !text-[#8736d9] transition-transform duration-200 group-hover:translate-x-1">Enter Web3 →</span>
+        </a>
+      </section>
+
+      <!-- featured work -->
+      <section class="px-6 pb-[80px] lg:px-[75px]">
+        <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="m-0 font-exo text-[13px] font-bold uppercase tracking-[0.16em] text-[var(--accent)]">Our Work</p>
+            <h2 class="m-0 mt-2 font-phudu text-[40px] font-bold leading-tight text-ink">Built by Kliff.</h2>
+          </div>
+          <a href="/work" class="font-exo text-[15px] font-semibold text-[var(--accent)] hover:underline">See all work →</a>
+        </div>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {featured.map((p) => <ProjectCard project={p} />)}
+        </div>
+      </section>
+
+      <!-- how we build -->
+      <section class="px-6 pb-[40px] lg:px-[75px]">
+        <div class="mb-10 text-center">
+          <p class="m-0 font-exo text-[13px] font-bold uppercase tracking-[0.16em] text-[var(--accent)]">How we build</p>
+          <h2 class="m-0 mt-2 font-phudu text-[40px] font-bold leading-tight text-ink">Simple process. Serious output.</h2>
+        </div>
+        <div class="mx-auto grid max-w-[1100px] grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((s) => (
+            <div class="rounded-2xl border border-[var(--hairline-solid)] bg-white p-6">
+              <span class="font-phudu text-[28px] font-bold text-[var(--accent)]">{s.n}</span>
+              <h3 class="m-0 mt-2 font-exo text-[18px] font-semibold text-ink">{s.title}</h3>
+              <p class="m-0 mt-1 font-exo text-[14px] text-muted">{s.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <CtaPanel />
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .web3-banner {
+    background:
+      radial-gradient(ellipse 80% 120% at 85% 20%, rgba(255, 255, 255, 0.14), transparent 60%),
+      linear-gradient(120deg, #6f27b8, #8736d9);
+  }
+</style>

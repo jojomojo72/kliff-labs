@@ -1,0 +1,188 @@
+---
+import Logo from './Logo.astro';
+import { serviceGroups } from '../data/services';
+
+// base = '' on kliff.io, '/web3' inside the web3 section (purple theme).
+interface Props {
+  base?: string;
+}
+const { base = '' } = Astro.props;
+const contactHref = `${base}/lets-talk`;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+
+<nav class="fixed top-0 start-0 z-40 w-full bg-[#ebebeb0d] backdrop-blur-md dashed-x">
+  <div class="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between px-6 py-[22px] lg:px-[80px] xl:px-[140px]">
+    <a href={base || '/'} class="flex items-center" aria-label="Home">
+      <Logo />
+      {base && <span class="ml-2 rounded-md bg-[var(--accent-soft)] px-2 py-1 font-exo text-[11px] font-semibold uppercase tracking-wide text-[var(--accent)]">web3</span>}
+    </a>
+
+    <div class="flex items-center gap-3 lg:order-2">
+      <a href={contactHref} class="btn btn-ink !h-[43px] !hidden lg:!inline-flex font-exo">Let's talk!</a>
+      <button
+        type="button"
+        class="hamburger-btn lg:hidden"
+        aria-controls="navbar-menu"
+        aria-expanded="false"
+        aria-label="Toggle navigation menu"
+      >
+        <span class="hamburger-icon"><span></span><span></span><span></span></span>
+      </button>
+    </div>
+
+    <div id="navbar-menu" class="order-3 hidden w-full lg:order-1 lg:flex lg:w-auto lg:flex-1 lg:justify-end lg:pr-[50px]">
+      <ul class="mt-4 flex flex-col gap-4 rounded-xl border border-[var(--hairline-solid)] bg-white p-5 font-exo text-[16px] font-medium lg:mt-0 lg:flex-row lg:items-center lg:gap-[30px] lg:border-0 lg:bg-transparent lg:p-0">
+        <li class="has-mega lg:static">
+          <a
+            href="/services"
+            class={`transition-colors duration-200 ${isActive('/services') ? 'font-semibold text-ink' : 'text-muted hover:text-ink'}`}
+            >Our Services<span class="ml-1 hidden text-[10px] align-middle lg:inline-block" aria-hidden="true">▾</span></a
+          >
+
+          <!-- marketsync-style mega dropdown (desktop only) -->
+          <div class="mega" role="region" aria-label="Services menu">
+            <div class="mx-auto grid max-w-[1160px] grid-cols-4 gap-8 px-10 py-8">
+              {serviceGroups.map((group) => (
+                <div class={group.web3 ? 'mega-web3 rounded-xl p-3 -m-3' : ''}>
+                  <a
+                    href={group.href}
+                    class={`mb-3 block font-exo text-[11px] font-bold uppercase tracking-[0.12em] ${group.web3 ? 'text-[#8736d9]' : 'text-muted'} hover:text-ink`}
+                    >{group.label}{group.web3 && ' ↗'}</a
+                  >
+                  <ul class="flex flex-col gap-2.5">
+                    {group.items.slice(0, 4).map((item) => (
+                      <li>
+                        <a href={group.href} class="group block">
+                          <span class="block text-[14px] font-semibold text-ink group-hover:text-[var(--accent)]">{item.name}</span>
+                          <span class="block text-[12px] leading-snug text-muted">{item.desc}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            <div class="dashed-x !border-b-0 border-t border-[var(--hairline-solid)] px-10 py-3 text-right">
+              <a href="/services" class="font-exo text-[13px] font-semibold text-[var(--accent)] hover:underline">View all services →</a>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a
+            href="/work"
+            class={`transition-colors duration-200 ${isActive('/work') ? 'font-semibold text-ink' : 'text-muted hover:text-ink'}`}
+            >Our Work</a
+          >
+        </li>
+        <li>
+          <a
+            href="/blogs"
+            class={`transition-colors duration-200 ${isActive('/blogs') ? 'font-semibold text-ink' : 'text-muted hover:text-ink'}`}
+            >Blogs</a
+          >
+        </li>
+        <li class="lg:hidden"><a href="/web3" class="font-semibold text-[#8736d9]">Web3 ↗</a></li>
+        <li class="lg:hidden"><a href={contactHref} class="btn btn-ink font-exo">Let's talk!</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<style>
+  /* mega dropdown */
+  .mega {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid var(--hairline-solid);
+    box-shadow: 0 24px 40px -20px rgba(11, 3, 14, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+    pointer-events: none;
+  }
+  @media (min-width: 1024px) {
+    .has-mega:hover .mega,
+    .has-mega:focus-within .mega {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+  }
+  @media (max-width: 1023px) {
+    .mega {
+      display: none; /* ponytail: mobile taps "Our Services" -> /services page */
+    }
+  }
+  /* web3 column always purple, whatever the page theme */
+  .mega-web3 {
+    background: rgba(135, 54, 217, 0.06);
+  }
+
+  /* hamburger — accent-colored per plan (blue on kliff.io, purple on web3) */
+  .hamburger-btn {
+    background: transparent;
+    border: none;
+    padding: 10px;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+  }
+  .hamburger-icon {
+    width: 24px;
+    height: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+  .hamburger-icon span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    border-radius: 4px;
+    background-color: var(--accent);
+    transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    transform-origin: center;
+  }
+  .hamburger-btn.open .hamburger-icon span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .hamburger-btn.open .hamburger-icon span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  .hamburger-btn.open .hamburger-icon span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+</style>
+
+<script>
+  const toggleBtn = document.querySelector<HTMLButtonElement>('.hamburger-btn');
+  const menu = document.getElementById('navbar-menu');
+
+  if (toggleBtn && menu) {
+    const syncState = () => {
+      const isHidden = menu.classList.contains('hidden');
+      toggleBtn.classList.toggle('open', !isHidden);
+      toggleBtn.setAttribute('aria-expanded', String(!isHidden));
+    };
+    toggleBtn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+      syncState();
+    });
+    menu.querySelectorAll('a').forEach((link) =>
+      link.addEventListener('click', () => {
+        menu.classList.add('hidden');
+        syncState();
+      })
+    );
+    syncState();
+  }
+</script>

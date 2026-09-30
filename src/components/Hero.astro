@@ -1,0 +1,128 @@
+---
+// Blockmob-style hero: badge, Phudu display heading with a rotating
+// cornered-box word, subtitle, two CTAs. Accent follows the page theme.
+interface Cta {
+  label: string;
+  href: string;
+  style: 'ink' | 'accent' | 'ghost';
+  external?: boolean;
+}
+interface Props {
+  badge: string;
+  titleTop: string;
+  titleBottom?: string;
+  words: string[];
+  sub: string;
+  ctas: Cta[];
+  cryptoFloats?: boolean; // web3 hero: drifting crypto glyphs
+}
+const { badge, titleTop, titleBottom = 'ACROSS', words, sub, ctas, cryptoFloats = false } = Astro.props;
+const floats = [
+  { glyph: 'Ξ', left: '8%', size: '42px', delay: '0s' },
+  { glyph: '₿', left: '18%', size: '30px', delay: '4s' },
+  { glyph: '◈', left: '82%', size: '36px', delay: '2s' },
+  { glyph: '⬡', left: '91%', size: '44px', delay: '6s' },
+  { glyph: '◇', left: '72%', size: '26px', delay: '9s' },
+];
+---
+
+<section class="hero-bg relative mx-auto w-full max-w-[1200px] overflow-hidden">
+  {cryptoFloats && (
+    <div class="absolute inset-0" aria-hidden="true">
+      {floats.map((f) => (
+        <span class="crypto-float bottom-0" style={`left:${f.left};font-size:${f.size};animation-delay:${f.delay};`}>{f.glyph}</span>
+      ))}
+    </div>
+  )}
+
+  <div class="relative flex w-full flex-col items-center justify-center px-8 pb-[100px] pt-[190px] text-center lg:pb-[120px]">
+    <div class="top-badge mb-3 font-exo">
+      <span class="dot"></span>
+      <span>{badge}</span>
+    </div>
+
+    <h1 class="hero-title font-phudu">
+      {titleTop}<br class="hidden md:block" />
+      {titleBottom}
+      <span class="corner-box">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <span class="rotator-clip"><span class="rotator" data-words={JSON.stringify(words)}>{words[0]}</span></span>
+      </span>
+    </h1>
+
+    <p class="mt-5 max-w-[717px] font-exo text-[18px] leading-relaxed tracking-[-0.6px] text-muted md:text-[20px]">{sub}</p>
+
+    <div class="mt-[30px] flex flex-col items-center gap-[15px] sm:flex-row">
+      {ctas.map((cta) => (
+        <a
+          class={`btn btn-${cta.style} font-exo`}
+          href={cta.href}
+          target={cta.external ? '_blank' : undefined}
+          rel={cta.external ? 'noopener noreferrer' : undefined}
+          >{cta.label}</a
+        >
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-title {
+    font-weight: 800;
+    font-size: 70px;
+    line-height: 0.97;
+    color: var(--ink);
+    margin: 0;
+  }
+  @media (max-width: 1000px) {
+    .hero-title {
+      font-size: 60px;
+    }
+  }
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 48px;
+    }
+  }
+  @media (max-width: 550px) {
+    .hero-title {
+      font-size: 38px;
+    }
+  }
+</style>
+
+<script>
+  // word rotator (same behavior as the blockmob hero, pauses off-screen)
+  const el = document.querySelector<HTMLElement>('.rotator');
+  const section = el?.closest('section');
+  if (el && section) {
+    const words: string[] = JSON.parse(el.dataset.words || '[]');
+    let i = 0;
+    const flip = () => {
+      el.classList.add('out');
+      window.setTimeout(() => {
+        i = (i + 1) % words.length;
+        el.innerText = words[i] ?? '';
+        el.classList.remove('out');
+        el.classList.add('in');
+        window.setTimeout(() => el.classList.remove('in'), 500);
+      }, 500);
+    };
+    let tid = 0;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.some((e) => e.isIntersecting);
+        if (visible && tid === 0) tid = window.setInterval(flip, 3000);
+        else if (!visible && tid !== 0) {
+          window.clearInterval(tid);
+          tid = 0;
+        }
+      },
+      { threshold: 0.12 }
+    );
+    observer.observe(section);
+  }
+</script>

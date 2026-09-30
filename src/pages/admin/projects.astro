@@ -1,0 +1,149 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { isAuthed } from '../../lib/admin-auth.js';
+import { listProjects } from '../../lib/content-store.js';
+
+if (!isAuthed(Astro.cookies)) return Astro.redirect('/admin/login');
+
+const projects = await listProjects();
+const input = 'w-full rounded-xl border border-[var(--hairline-solid)] bg-white px-3.5 py-2.5 text-[14.5px] outline-none transition-colors focus:border-[var(--accent)]';
+const label = 'flex flex-col gap-1.5 text-[13.5px] font-semibold';
+---
+
+<AdminLayout title="Projects — Kliff Admin">
+  <main class="mx-auto max-w-[1000px] px-6 py-12">
+    <div class="mb-8 flex flex-wrap items-center justify-between gap-3">
+      <h1 class="m-0 font-phudu text-[40px] font-extrabold leading-none">Projects</h1>
+      <button id="new-btn" type="button" class="btn btn-accent !h-[43px]">+ New project</button>
+    </div>
+
+    <div class="overflow-x-auto rounded-2xl border border-[var(--hairline-solid)] bg-white">
+      <table class="w-full border-collapse text-left text-[14.5px]">
+        <thead>
+          <tr class="border-b border-[var(--hairline-solid)] text-[12.5px] uppercase tracking-[0.08em] text-muted">
+            <th class="px-5 py-3.5 font-semibold">Project</th>
+            <th class="px-5 py-3.5 font-semibold">Category</th>
+            <th class="px-5 py-3.5 font-semibold">Year</th>
+            <th class="px-5 py-3.5 font-semibold">Status</th>
+            <th class="px-5 py-3.5 font-semibold">Featured</th>
+            <th class="px-5 py-3.5 font-semibold"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {projects.map((p) => (
+            <tr class="border-b border-[var(--hairline-solid)] last:border-0">
+              <td class="max-w-[320px] px-5 py-3.5">
+                <span class="font-medium">{p.title}</span>
+                <span class="text-muted"> — {p.tagline}</span>
+              </td>
+              <td class={`px-5 py-3.5 font-medium ${p.category === 'Web3' ? 'text-[#8736d9]' : 'text-muted'}`}>{p.category}</td>
+              <td class="px-5 py-3.5 text-muted">{p.year}</td>
+              <td class="px-5 py-3.5">
+                {p.status === 'in-progress'
+                  ? <span class="rounded-full border border-dashed border-[var(--accent)] px-2.5 py-0.5 text-[12.5px] font-medium text-[var(--accent)]">In progress</span>
+                  : <span class="text-muted">Live</span>}
+              </td>
+              <td class="px-5 py-3.5 text-muted">{p.featured ? '★' : ''}</td>
+              <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                <button type="button" data-edit={p.slug} class="font-semibold text-[var(--accent)] hover:underline">Edit</button>
+                <button type="button" data-del={p.slug} class="ml-4 font-semibold text-red-500 hover:underline">Delete</button>
+              </td>
+            </tr>
+          ))}
+          {projects.length === 0 && (
+            <tr><td colspan="6" class="px-5 py-10 text-center text-muted">No projects yet — create the first one.</td></tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    <dialog id="project-dialog" class="w-full max-w-[640px] rounded-2xl border border-[var(--hairline-solid)] p-0 backdrop:bg-ink/40">
+      <form id="project-form" method="dialog" class="flex flex-col gap-4 p-8">
+        <h2 id="dialog-title" class="m-0 font-phudu text-[26px] font-bold">New project</h2>
+        <input type="hidden" name="slug" />
+        <div class="grid grid-cols-2 gap-4">
+          <label class={label}>Title <input class={input} name="title" required /></label>
+          <label class={label}>Tagline <input class={input} name="tagline" placeholder="Shown as “Title — tagline”" required /></label>
+          <label class={label}>Category
+            <select class={input} name="category">
+              <option>Web</option><option>App</option><option>Web3</option><option>Branding</option>
+            </select>
+          </label>
+          <label class={label}>Year <input class={input} name="year" placeholder="2026" required /></label>
+          <label class={label}>Status
+            <select class={input} name="status">
+              <option value="live">Live</option>
+              <option value="in-progress">In progress (unlinked on /work)</option>
+            </select>
+          </label>
+          <label class={label}>Link <input class={input} type="url" name="link" placeholder="https:// (live only)" /></label>
+        </div>
+        <label class={label}>What was done <span class="font-normal text-muted">(comma-separated)</span>
+          <input class={input} name="work" placeholder="Brand refresh, UI/UX, SEO" />
+        </label>
+        <label class={label}>Stack <span class="font-normal text-muted">(comma-separated)</span>
+          <input class={input} name="stack" placeholder="Astro, Tailwind" />
+        </label>
+        <label class="flex items-center gap-2.5 text-[14px] font-medium">
+          <input type="checkbox" name="featured" class="h-4 w-4 accent-[var(--accent)]" /> Featured on the landing page
+        </label>
+        <p id="form-error" class="m-0 hidden rounded-lg bg-red-100 p-2.5 text-center text-[13.5px] text-red-600"></p>
+        <div class="mt-1 flex justify-end gap-3">
+          <button type="button" id="cancel-btn" class="btn btn-ghost !h-[43px]">Cancel</button>
+          <button type="submit" class="btn btn-ink !h-[43px]">Save project</button>
+        </div>
+      </form>
+    </dialog>
+  </main>
+</AdminLayout>
+
+<script define:vars={{ projects }}>
+  const dialog = document.getElementById('project-dialog');
+  const form = document.getElementById('project-form');
+  const title = document.getElementById('dialog-title');
+  const errorBox = document.getElementById('form-error');
+
+  const openDialog = (project) => {
+    form.reset();
+    errorBox.classList.add('hidden');
+    title.textContent = project ? 'Edit project' : 'New project';
+    if (project) {
+      for (const key of ['slug', 'title', 'tagline', 'category', 'year', 'status', 'link']) {
+        if (form.elements[key]) form.elements[key].value = project[key] ?? '';
+      }
+      form.elements.work.value = (project.work ?? []).join(', ');
+      form.elements.stack.value = (project.stack ?? []).join(', ');
+      form.elements.featured.checked = Boolean(project.featured);
+    }
+    dialog.showModal();
+  };
+
+  document.getElementById('new-btn').addEventListener('click', () => openDialog(null));
+  document.getElementById('cancel-btn').addEventListener('click', () => dialog.close());
+
+  document.querySelectorAll('[data-edit]').forEach((btn) =>
+    btn.addEventListener('click', () => openDialog(projects.find((p) => p.slug === btn.dataset.edit)))
+  );
+
+  document.querySelectorAll('[data-del]').forEach((btn) =>
+    btn.addEventListener('click', async () => {
+      if (!confirm('Delete this project?')) return;
+      const res = await fetch(`/api/admin/projects?slug=${encodeURIComponent(btn.dataset.del)}`, { method: 'DELETE' });
+      if (res.ok) window.location.reload();
+      else alert((await res.json()).details || 'Delete failed');
+    })
+  );
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const isEdit = Boolean(data.get('slug'));
+    const res = await fetch('/api/admin/projects', { method: isEdit ? 'PUT' : 'POST', body: data });
+    if (res.ok) window.location.reload();
+    else {
+      const body = await res.json().catch(() => ({}));
+      errorBox.textContent = body.details || body.error || 'Save failed';
+      errorBox.classList.remove('hidden');
+    }
+  });
+</script>

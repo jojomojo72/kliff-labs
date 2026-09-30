@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import CtaPanel from '../components/CtaPanel.astro';
+import { listProjects } from '../lib/content-store.js';
+
+const projects = await listProjects();
+
+// noir.io work-page layout: centered display title, filter pills, 3-column
+// tile grid (in-progress projects unlinked, per plan), empty state included.
+const categories = ['All', 'Web', 'App', 'Web3', 'Branding'];
+---
+
+<Layout title="Our Work — Kliff Labs" description="Selected projects by Kliff Labs — web, apps, Web3, and branding, including work currently in progress.">
+  <main>
+    <div class="rails mx-auto">
+      <header class="px-6 pb-[36px] pt-[170px] text-center lg:px-[75px]">
+        <h1 class="m-0 font-phudu text-[52px] font-extrabold leading-none text-ink md:text-[72px]">SELECTED PROJECTS</h1>
+      </header>
+
+      <div class="dashed-x flex flex-wrap items-center justify-center gap-2.5 px-6 pb-8 lg:px-[75px]" role="tablist" aria-label="Filter projects">
+        {categories.map((cat, i) => (
+          <button
+            type="button"
+            class={`filter-pill rounded-full border px-5 py-2.5 font-exo text-[14px] font-medium transition-colors ${
+              i === 0 ? 'is-active border-ink bg-ink text-white' : 'border-[var(--hairline-solid)] bg-white text-ink hover:border-ink'
+            }`}
+            data-filter={cat}
+            >{cat}</button
+          >
+        ))}
+      </div>
+
+      <section class="px-6 py-10 lg:px-[75px]">
+        <div id="work-grid" class="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((p) => <ProjectCard project={p} />)}
+        </div>
+        <div id="work-empty" class="hidden py-16 text-center font-exo text-[17px] text-muted">
+          No work here yet, try a different filter
+        </div>
+      </section>
+
+      <CtaPanel />
+    </div>
+  </main>
+</Layout>
+
+<script>
+  const pills = document.querySelectorAll<HTMLButtonElement>('.filter-pill');
+  const cards = document.querySelectorAll<HTMLElement>('.work-card');
+  const empty = document.getElementById('work-empty');
+
+  pills.forEach((pill) =>
+    pill.addEventListener('click', () => {
+      const filter = pill.dataset.filter;
+      pills.forEach((p) => {
+        const active = p === pill;
+        p.classList.toggle('is-active', active);
+        p.classList.toggle('bg-ink', active);
+        p.classList.toggle('text-white', active);
+        p.classList.toggle('border-ink', active);
+        p.classList.toggle('bg-white', !active);
+        p.classList.toggle('text-ink', !active);
+        p.classList.toggle('border-[var(--hairline-solid)]', !active);
+      });
+      let shown = 0;
+      cards.forEach((card) => {
+        const show = filter === 'All' || card.dataset.cat === filter;
+        card.classList.toggle('hidden', !show);
+        if (show) shown++;
+      });
+      empty?.classList.toggle('hidden', shown > 0);
+    })
+  );
+</script>

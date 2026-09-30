@@ -1,0 +1,67 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import CtaPanel from '../../components/CtaPanel.astro';
+import { serviceGroups } from '../../data/services';
+import { listProjects } from '../../lib/content-store.js';
+import { site } from '../../data/site';
+
+const web3Services = serviceGroups.find((g) => g.key === 'web3')!;
+const web3Work = (await listProjects()).filter((p) => p.category === 'Web3');
+---
+
+<Layout
+  title="Kliff Labs Web3 — Smart Contracts, dApps, Tokens & NFTs"
+  description="The onchain side of Kliff Labs: smart contract development, dApps, tokenomics, NFT platforms, bots, audits, DAO tooling, and blockchain consulting."
+  theme="web3"
+>
+  <main>
+    <Hero
+      badge="web3.kliff.io — the onchain side of Kliff"
+      titleTop="WE BUILD ONCHAIN"
+      titleBottom="FROM"
+      words={['DAPPS', 'TOKENS', 'NFTS', 'DAOS', 'BOTS']}
+      sub="Smart contracts, dApps, token launches, and the communities around them — designed, audited, and shipped by one team."
+      ctas={[
+        { label: 'Message us on Telegram', href: site.telegram, style: 'accent', external: true },
+        { label: "Let's talk!", href: '/web3/lets-talk', style: 'ghost' },
+      ]}
+      cryptoFloats={true}
+    />
+
+    <div class="rails mx-auto">
+      <!-- full web3 service list -->
+      <section class="px-6 py-[80px] lg:px-[75px]">
+        <div class="mb-10 text-center">
+          <p class="m-0 font-exo text-[13px] font-bold uppercase tracking-[0.16em] text-[var(--accent)]">Web3 Services</p>
+          <h2 class="m-0 mt-2 font-phudu text-[40px] font-bold leading-tight text-ink md:text-[48px]">Contract to community.</h2>
+        </div>
+        <div class="mx-auto grid max-w-[1100px] grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {web3Services.items.map((item) => (
+            <div class="rounded-2xl border border-[var(--hairline-solid)] bg-white p-6 transition-transform duration-200 hover:-translate-y-1">
+              <h3 class="m-0 font-exo text-[17px] font-semibold text-ink">{item.name}</h3>
+              <p class="m-0 mt-1.5 font-exo text-[14px] leading-relaxed text-muted">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- web3 work -->
+      <section class="px-6 pb-[80px] lg:px-[75px]">
+        <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="m-0 font-exo text-[13px] font-bold uppercase tracking-[0.16em] text-[var(--accent)]">Our Work</p>
+            <h2 class="m-0 mt-2 font-phudu text-[40px] font-bold leading-tight text-ink">Shipped onchain.</h2>
+          </div>
+          <a href="/work" class="font-exo text-[15px] font-semibold text-[var(--accent)] hover:underline">See all work →</a>
+        </div>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {web3Work.map((p) => <ProjectCard project={p} />)}
+        </div>
+      </section>
+
+      <CtaPanel base="/web3" />
+    </div>
+  </main>
+</Layout>

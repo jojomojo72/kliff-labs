@@ -1,0 +1,71 @@
+---
+import { site } from '../data/site';
+
+// Contact page body. Per plan: kliff.io leads with WhatsApp (+ email etc.),
+// web3.kliff.io leads with Telegram.
+interface Props {
+  base?: string;
+}
+const { base = '' } = Astro.props;
+const web3 = base === '/web3';
+
+const channels = [
+  {
+    label: web3 ? 'Telegram' : 'WhatsApp',
+    value: web3 ? '@klifflabs' : 'Chat with the team',
+    href: web3 ? site.telegram : site.whatsapp,
+    primary: true,
+    note: 'Fastest reply — usually within the hour.',
+  },
+  {
+    label: 'Email',
+    value: site.email,
+    href: `mailto:${site.email}`,
+    primary: false,
+    note: 'For briefs, RFPs, and longer thoughts.',
+  },
+  {
+    label: web3 ? 'WhatsApp' : 'Telegram',
+    value: web3 ? 'Chat with the team' : '@klifflabs',
+    href: web3 ? site.whatsapp : site.telegram,
+    primary: false,
+    note: 'Also works, if you live there instead.',
+  },
+];
+---
+
+<div class="rails mx-auto">
+  <header class="px-6 pb-[50px] pt-[170px] text-center lg:px-[75px]">
+    <p class="m-0 font-exo text-[13px] font-bold uppercase tracking-[0.16em] text-[var(--accent)]">Contact</p>
+    <h1 class="m-0 mt-2 font-phudu text-[48px] font-extrabold leading-none text-ink md:text-[64px]">LET'S TALK!</h1>
+    <p class="mx-auto mt-4 max-w-[560px] font-exo text-[17px] text-muted">
+      Tell us what you're building{web3 ? ' onchain' : ''} — we'll tell you how we'd build it, and what it takes to ship.
+    </p>
+  </header>
+
+  <section class="px-6 pb-[100px] lg:px-[75px]">
+    <div class="mx-auto grid max-w-[1000px] grid-cols-1 gap-6 md:grid-cols-3">
+      {channels.map((c) => (
+        <a
+          href={c.href}
+          target={c.href.startsWith('mailto:') ? undefined : '_blank'}
+          rel={c.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+          class={`group flex flex-col gap-2 rounded-2xl border p-7 transition-transform duration-200 hover:-translate-y-1 ${
+            c.primary ? 'border-transparent bg-[var(--accent)] text-white' : 'border-[var(--hairline-solid)] bg-white'
+          }`}
+        >
+          <span class={`font-exo text-[12px] font-bold uppercase tracking-[0.14em] ${c.primary ? 'text-white/80' : 'text-[var(--accent)]'}`}>{c.label}</span>
+          <span class={`font-phudu text-[24px] font-bold leading-tight ${c.primary ? 'text-white' : 'text-ink'}`}>{c.value}</span>
+          <span class={`font-exo text-[13.5px] ${c.primary ? 'text-white/75' : 'text-muted'}`}>{c.note}</span>
+          <span class={`mt-2 font-exo text-[15px] font-semibold transition-transform duration-200 group-hover:translate-x-1 ${c.primary ? 'text-white' : 'text-[var(--accent)]'}`}>Open →</span>
+        </a>
+      ))}
+    </div>
+    <p class="mt-8 text-center font-exo text-[14px] text-muted">
+      Or find us on
+      <a href={site.x} target="_blank" rel="noopener noreferrer" class="font-semibold text-[var(--accent)] hover:underline">X.com</a>
+      and
+      <a href={site.instagram} target="_blank" rel="noopener noreferrer" class="font-semibold text-[var(--accent)] hover:underline">Instagram</a>.
+    </p>
+  </section>
+</div>
